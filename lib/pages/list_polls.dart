@@ -122,7 +122,7 @@ ListPolls({ Key? key }) : super(key: key);
                         padding: const EdgeInsets.all(8.0),
                         child: CustomProgressbar(
                           title: pollResponse.data[index].options[item],
-                           progress:.7 ,
+                           progress:.2 * (item+1) ,
                            isLinearProgress: item == 0 ? true : false,),
                       );
                   
