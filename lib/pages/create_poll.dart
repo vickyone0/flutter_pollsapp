@@ -36,12 +36,12 @@ class _CreatePollState extends State<CreatePoll> {
 
     return  Scaffold(
       appBar: AppBar(
-        title: Text("Moderators Poll",style : TextStyle(
+        title: const Text("Moderators Poll",style : TextStyle(
               color: Colors.white,
               fontSize: 20, 
               ),),
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
           gradient: LinearGradient(
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
@@ -55,29 +55,29 @@ class _CreatePollState extends State<CreatePoll> {
         child: 
       SingleChildScrollView(
         child: Padding(
-          padding:  EdgeInsets.all(16.0),
+          padding:  const EdgeInsets.all(16.0),
           child: Column(
             children: [
              const Text("Create poll",style: TextStyle(
               color: Colors.white,
               fontSize: 18, 
               ),),
-             SizedBox(height: 50,),
+             const SizedBox(height: 50,),
              TitleAndTextfield(
               title: 'Topic',
               controller: topicController,
               ),
-             SizedBox(height: 50,),
+             const SizedBox(height: 50,),
              TitleAndTextfield(
               title: 'Statement',
               controller: statementController,
               ),
-             SizedBox(height: 50,),
+             const SizedBox(height: 50,),
              Container(
-               decoration: BoxDecoration(
+               decoration:  BoxDecoration(
                    color: Colors.transparent,
                    borderRadius: BorderRadius.circular(10),
-                   border: Border(
+                   border:const Border(
                     bottom:BorderSide(color: Colors.grey, width: 2.0),
                     top:BorderSide(color: Colors.grey, width: .3),
                     left:BorderSide(color: Colors.grey, width: 1.0),
@@ -129,29 +129,36 @@ class _CreatePollState extends State<CreatePoll> {
                   
                   
                              
-                             SizedBox(height: 50,),
-                             CustomTextformfield(labelText: 'Option 1', controller: optionFirstController,),
-                             SizedBox(height: 20,),
+                            const SizedBox(height: 50,),
+                            Column(
+                              children: _selectedValue == 1 ?  [
+                                CustomTextformfield(labelText: 'Option 1', controller: optionFirstController,),
+                             const SizedBox(height: 20,),
                              CustomTextformfield(labelText: 'Option 2', controller: optionSecondController,),
                              
-                             SizedBox(height: 20,),
+                             const SizedBox(height: 20,),
                              CustomTextformfield(labelText: 'Option 3', controller: optionThirdController,),
                              
-                             SizedBox(height: 20,),
+                            const SizedBox(height: 20,),
                              CustomTextformfield(labelText: 'Option 4', controller: optionFourthController,),
                 
+                            ] : [Container()],),
+                             
                   ],
                 ),
               ),
              ),
              
-             SizedBox(height: 50,),
+             const SizedBox(height: 50,),
              ElevatedButton(
               onPressed: (){
                 _sendPostRequest( 
-                  topicController.text,
-                   statementController.text,
-                  [optionFirstController.text, optionSecondController.text,optionThirdController.text,optionFourthController.text]
+                   topic:topicController.text,
+                   statement:statementController.text,
+                   firstOption:optionFirstController.text,
+                   secondOption:optionSecondController.text,
+                  thirdOption:optionThirdController.text,
+                  forthOption:optionFourthController.text
                   );
               }, 
               child: Text('Submit',style: TextStyle(color: Colors.black),),
@@ -176,8 +183,13 @@ class _CreatePollState extends State<CreatePoll> {
 
 
 
-Future<void> _sendPostRequest(String topic, String statement, List<String> options) async {
+Future<void> _sendPostRequest({ required String topic,required String statement,required String firstOption,required String secondOption ,required String thirdOption ,required String forthOption}) async {
 
+ if(topic.isEmpty || statement.isEmpty || firstOption.isEmpty || secondOption.isEmpty || thirdOption.isEmpty || forthOption.isEmpty) {
+   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please fill all the fields')));
+   return;
+ } else{
+ final List<String> options = [firstOption, secondOption, thirdOption, forthOption];
   Map<String, dynamic> appData = {
   
 "topic":  topic,
@@ -203,7 +215,6 @@ Future<void> _sendPostRequest(String topic, String statement, List<String> optio
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(reason)),
       );
-      print('Response: ${response.body}');
       
     } else {
       final jsonResponse = json.decode(response.body);
@@ -211,8 +222,8 @@ Future<void> _sendPostRequest(String topic, String statement, List<String> optio
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(reason)),
       );
-      print('Error: ${response.statusCode}');
      
     }
   }
+}
 }
